@@ -1,0 +1,57 @@
+[game]
+name = "Panel de Pon"
+
+[game.encoding]
+table = [
+    { offset = 0x00, glyphs = [
+        # HIRAGANA
+        "あ", "い", "う", "え", "お", "か", "き", "く", "け", "こ", "さ", "し", "す", "せ", "そ", 
+        "た", "ち", "つ", "て", "と", "な", "に", "ぬ", "ね", "の", "は", "ひ", "ふ", "へ", "ほ", 
+        "ま", "み", "む", "め", "も", "や", "ゆ", "よ", "ら", "り", "る", "れ", "ろ", "わ", "を", 
+        "ん", "が", "ぎ", "ぐ", "げ", "ご", "ざ", "じ", "ず", "ぜ", "ぞ", "だ", "ぢ", "づ", "で", 
+        "ど", "ば", "び", "ぶ", "べ", "ぼ", "ぱ", "ぴ", "ぷ", "ぺ", "ぽ", "ぁ", "ぃ", "ぅ", "ぇ", 
+        "ぉ", "ゃ", "ゅ", "ょ", "っ",
+
+        # KATAKANA
+        "ア", "イ", "ウ", "エ", "オ", "カ", "キ", "ク", "ケ", "コ", "サ", "シ", "ス", "セ", "ソ", 
+        "タ", "チ", "ツ", "テ", 
+        "ト", "ナ", "ニ", "ヌ", "ネ", "ノ", "ハ", "ヒ", "フ", "ヘ", "ホ", "マ", "ミ", "ム", "メ", 
+        "モ", "ヤ", "ユ", "ヨ", 
+        "ラ", "リ", "ル", "レ", "ロ", "ワ", "ヲ", "ン", "ガ", "ギ", "グ", "ゲ", "ゴ", "ザ", "ジ", 
+        "ズ", "ゼ", "ゾ", "ダ", 
+        "ヂ", "ヅ", "デ", "ド", "バ", "ビ", "ブ", "ベ", "ボ", "パ", "ピ", "プ", "ペ", "ポ", "ァ", 
+        "ィ", "ゥ", "ェ", "ォ", 
+        "ャ", "ュ", "ョ", "ッ",
+
+        # PUNCTUATION
+        "－", "·", "…", "！", "？"
+    ]},
+]
+
+[game.encoding.controls]
+F1 = { name = "unknown1", length = 3 }
+F2 = { name = "unknown2", length = 3 }
+F3 = { name = "speed", length = 1 }
+F4 = { name = "\n" }
+F5 = { name = "clear", length = 0 }
+F6 = { name = "table", length = 1 }  # Rename to shiftEncoding
+F7 = { name = "sleep1", length = 0 }
+F8 = { name = "sleep2", length = 0 }
+F9 = { name = "sleep3", length = 0 }
+FA = { name = "textbox", length = 4 }
+FB = { name = "indent", length = 1 }  # This might actually be setSpaceWidth but idr
+FC = { name = "color", length = 2 }
+FD = { name = "END", length = 0 }  # Line terminator
+
+## How control codes should be rendered - proposal ##
+# # Case 1 - ['length'] is undefined
+# ['name'] is rendered by itself, used for newlines and string terminators
+# Example: おはよう\nヨッシ
+
+# # Case 2 - ['length'] == 0
+# ['name'] is rendered inside angle brackets, no arguments
+# Example: おはよう<sleep1>ヨッシ
+
+# # Case 3 - ['length'] > 0
+# ['name'] is rendered inside angle brackets, with arguments separated by equal sign
+# Example: おはよう<textbox=6789ABCD>ヨッシ
