@@ -1,0 +1,4 @@
+# SNES rom files
+*.sfc
+*.smc
+*.bs
