@@ -41,7 +41,8 @@ F9 = { name = "sleep3", length = 0 }
 FA = { name = "textbox", length = 4 }
 FB = { name = "indent", length = 1 }  # This might actually be setSpaceWidth but idr
 FC = { name = "color", length = 2 }
-FD = { name = "END", length = 0 }  # Line terminator
+FD = { name = "unknown3", length = 0 }  # Line terminator / 1 day later: No it's not???? wth vinny from 2 years ago
+FE = { name = "unknown4", length = 2 }
 
 ## How control codes should be rendered - proposal ##
 # # Case 1 - ['length'] is undefined
