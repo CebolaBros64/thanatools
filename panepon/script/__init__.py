@@ -9,10 +9,10 @@ class Section:
 
 class Text(Section):
     # def __str__(self):
-        # return
+        # return self.bytes
         # return ''.join([f"\\x{i:02x}" for i in self.as_bytes()])
 
-    def as_text(self):
+    def as_text(self, translationTable):
         return self.__str__()
 
 class ControlCode(Section):
@@ -28,12 +28,13 @@ class ControlCode(Section):
         else:
             return f"<{self.codeName} />"
     
-    def as_text(self):
+    def as_text(self, _):
         return self.__str__()
     
 class Message:
     def __init__(self, game_toml, bytes):
         self.index = 0
+        self.encoding = game_toml['encoding']['table']
         self.sections = []
 
         # Split message into sections
@@ -70,8 +71,15 @@ class Message:
         self.index += 1
         return returnVal
     
-    # def __str__(self):
-    #     return
+    def __str__(self):
+        # translationTable = generateTranslationTable(self.encoding, 0)
+        translationTable = {} 
+
+        returnVal = ''
+        for section in self.sections:
+            returnVal += section.as_text(translationTable)
+
+        return returnVal
 
 class Block:
     def __init__(self, game_toml, rom, start_offset=0, length=None):
