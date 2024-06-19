@@ -8,12 +8,29 @@ class Section:
         return self.bytes
 
 class Text(Section):
+    # def __str__(self):
+        # return
+        # return ''.join([f"\\x{i:02x}" for i in self.as_bytes()])
+
     def as_text(self):
-        pass
+        return self.__str__()
 
 class ControlCode(Section):
+    def __init__(self, bytes, game):
+        self.codeByte = bytes[0]
+        self.codeName = game['encoding']['controls'][f"{self.codeByte:02x}".upper()]['name']
+        self.paramsBytes = bytes[1:]
+        Section.__init__(self, bytes)
+
+    def __str__(self):
+        if len(self.bytes) > 1:
+            return f"<{self.codeName} params='{self.paramsBytes.hex()}'/>"
+        else:
+            return f"<{self.codeName} />"
+            
+    
     def as_text(self):
-        pass
+        return self.__str__()
 
 class Block:
     def __init__(self, game_toml, rom, start_offset=0, length=None):
@@ -41,7 +58,7 @@ class Block:
                         section = b''
 
                     if 'length' in ctrlCode:
-                        message.append(ControlCode(binMessage[i:i+ctrlCode['length']+1]))
+                        message.append(ControlCode(binMessage[i:i+ctrlCode['length']+1], self.game))
                         i += ctrlCode['length'] + 1
                     else:
                         section += byte.to_bytes()
