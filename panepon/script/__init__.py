@@ -27,10 +27,27 @@ class ControlCode(Section):
             return f"<{self.codeName} params='{self.paramsBytes.hex()}'/>"
         else:
             return f"<{self.codeName} />"
-            
     
     def as_text(self):
         return self.__str__()
+    
+class Message():
+    def __init__(self, sectionArray):
+        self.index = 0
+        self.array = sectionArray
+
+    def __iter__(self):
+        return self
+    
+    def __next__(self):
+        if self.index == len(self.array):
+            raise StopIteration
+        returnVal = self.array[self.index]
+        self.index += 1
+        return returnVal
+    
+    # def __str__(self):
+    #     return
 
 class Block:
     def __init__(self, game_toml, rom, start_offset=0, length=None):
@@ -43,7 +60,7 @@ class Block:
         self.messages = []
         
         for binMessage in binMessages:
-            message = []
+            sections = []
             section = b''
             i = 0
 
@@ -54,11 +71,11 @@ class Block:
                     ctrlCode = self.game['encoding']['controls'][f"{byte:02x}".upper()]
 
                     if section != b'':
-                        message.append(Text(section))
+                        sections.append(Text(section))
                         section = b''
 
                     if 'length' in ctrlCode:
-                        message.append(ControlCode(binMessage[i:i+ctrlCode['length']+1], self.game))
+                        sections.append(ControlCode(binMessage[i:i+ctrlCode['length']+1], self.game))
                         i += ctrlCode['length'] + 1
                     else:
                         section += byte.to_bytes()
@@ -67,4 +84,5 @@ class Block:
                     section += byte.to_bytes()
                     i += 1
 
-            self.messages.append(message)
+            self.messages.append(Message(sections))
+    
