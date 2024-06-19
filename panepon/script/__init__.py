@@ -31,18 +31,40 @@ class ControlCode(Section):
     def as_text(self):
         return self.__str__()
     
-class Message():
-    def __init__(self, sectionArray):
+class Message:
+    def __init__(self, game_toml, bytes):
         self.index = 0
-        self.array = sectionArray
+        self.sections = []
+        section = b''
+        i = 0
+
+        while i < len(bytes):
+            byte = bytes[i]
+
+            if byte >= 0xF1 and f"{byte:02x}".upper() in game_toml['encoding']['controls']:
+                ctrlCode = game_toml['encoding']['controls'][f"{byte:02x}".upper()]
+
+                if section != b'':
+                    self.sections.append(Text(section))
+                    section = b''
+
+                if 'length' in ctrlCode:
+                    self.sections.append(ControlCode(bytes[i:i+ctrlCode['length']+1], game_toml))
+                    i += ctrlCode['length'] + 1
+                else:
+                    section += byte.to_bytes()
+                    i += 1
+            else:
+                section += byte.to_bytes()
+                i += 1
 
     def __iter__(self):
         return self
     
     def __next__(self):
-        if self.index == len(self.array):
+        if self.index == len(self.sections):
             raise StopIteration
-        returnVal = self.array[self.index]
+        returnVal = self.sections[self.index]
         self.index += 1
         return returnVal
     
@@ -60,29 +82,5 @@ class Block:
         self.messages = []
         
         for binMessage in binMessages:
-            sections = []
-            section = b''
-            i = 0
-
-            while i < len(binMessage):
-                byte = binMessage[i]
-
-                if byte >= 0xF1 and f"{byte:02x}".upper() in self.game['encoding']['controls']:
-                    ctrlCode = self.game['encoding']['controls'][f"{byte:02x}".upper()]
-
-                    if section != b'':
-                        sections.append(Text(section))
-                        section = b''
-
-                    if 'length' in ctrlCode:
-                        sections.append(ControlCode(binMessage[i:i+ctrlCode['length']+1], self.game))
-                        i += ctrlCode['length'] + 1
-                    else:
-                        section += byte.to_bytes()
-                        i += 1
-                else:
-                    section += byte.to_bytes()
-                    i += 1
-
-            self.messages.append(Message(sections))
+            self.messages.append(Message(self.game, binMessage))
     
