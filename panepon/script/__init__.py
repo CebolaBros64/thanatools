@@ -16,7 +16,7 @@ class ControlCode(Section):
         pass
 
 class Block:
-    def __init__(self, game_toml, rom, length=None, start_offset=0):
+    def __init__(self, game_toml, rom, start_offset=0, length=None):
         self.game = tomllib.load(game_toml)['game']
 
         rom.seek(start_offset)
