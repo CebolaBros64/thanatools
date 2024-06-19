@@ -35,6 +35,8 @@ class Message:
     def __init__(self, game_toml, bytes):
         self.index = 0
         self.sections = []
+
+        # Split message into sections
         section = b''
         i = 0
 
@@ -78,6 +80,7 @@ class Block:
         rom.seek(start_offset)
         self.bytes = rom.read(length)
 
+        # Split block into messages
         binMessages = self.bytes.split(b'\xff')
         self.messages = []
         
