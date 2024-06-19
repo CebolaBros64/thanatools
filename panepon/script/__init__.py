@@ -16,9 +16,9 @@ class Text(Section):
         return self.__str__()
 
 class ControlCode(Section):
-    def __init__(self, bytes, game):
+    def __init__(self, bytes, game_toml):
         self.codeByte = bytes[0]
-        self.codeName = game['encoding']['controls'][f"{self.codeByte:02x}".upper()]['name']
+        self.codeName = game_toml['encoding']['controls'][f"{self.codeByte:02x}".upper()]['name']
         self.paramsBytes = bytes[1:]
         Section.__init__(self, bytes)
 
