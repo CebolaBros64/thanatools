@@ -1,31 +1,14 @@
 from pprint import pprint
-import tomllib
-
-class Section:
-    def __init__(self, bytes):
-        self.bytes = bytes
-
-    def as_bytes(self):
-        return self.bytes
-
-class Text(Section):
-    def as_text(self):
-        pass
-
-class ControlCode(Section):
-    def as_text(self):
-        pass
+from panepon.script import Block, Text, ControlCode
 
 if __name__ == '__main__':
     print("=== THANATOOLS ===")
 
-    with open('panepon.toml', 'rb') as f:
-        test = tomllib.load(f)
-
-    with open('character_bios.bin', 'rb') as f:
-        binBlock = f.read()
+    with open('panepon.toml', 'rb') as toml:
+        with open('character_bios.bin', 'rb') as rom:
+            test = Block(toml, rom)
     
-    binMessages = binBlock.split(b'\xff')
+    binMessages = test.bytes.split(b'\xff')
     messages = []
     
     for binMessage in binMessages:
@@ -36,8 +19,8 @@ if __name__ == '__main__':
         while i < len(binMessage):
             byte = binMessage[i]
 
-            if byte >= 0xF1 and f"{byte:02x}".upper() in test['game']['encoding']['controls']:
-                ctrlCode = test['game']['encoding']['controls'][f"{byte:02x}".upper()]
+            if byte >= 0xF1 and f"{byte:02x}".upper() in test.game['encoding']['controls']:
+                ctrlCode = test.game['encoding']['controls'][f"{byte:02x}".upper()]
 
                 if section != b'':
                     message.append(Text(section))
