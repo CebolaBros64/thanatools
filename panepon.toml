@@ -1,5 +1,7 @@
 [game]
 name = "Panel de Pon"
+shiftTableBy = 8  # For whatever reason, in Panepon the font gets shifted by 8px vertically unlike Tetris Attack
+                  # Maybe the font size got changed during development?
 
 [game.encoding]
 table = [
@@ -34,7 +36,7 @@ F2 = { name = "unknown2", length = 3 }
 F3 = { name = "speed", length = 1 }
 F4 = { name = "\n" }
 F5 = { name = "clear", length = 0 }
-F6 = { name = "table", length = 1 }  # Rename to shiftEncoding
+F6 = { name = "table", length = 1 }  # Possible new names: shiftEncoding / shiftFont / offsetFont
 F7 = { name = "sleep1", length = 0 }
 F8 = { name = "sleep2", length = 0 }
 F9 = { name = "sleep3", length = 0 }

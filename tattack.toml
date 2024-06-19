@@ -1,5 +1,6 @@
 [game]
 name = "Tetris Attack"
+shiftTableBy = 16
 
 [game.encoding]
 table = [
