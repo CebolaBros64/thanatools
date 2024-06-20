@@ -1,7 +1,7 @@
 import tomllib
 
-controlCodeStart = 0xF1  # Panepon# Should be a parameter in the .toml file, hardcoded for now
-controlCodeStart = 0xC4
+controlCodeStart = 0xF1  # Panepon  # Should be a parameter in the .toml file, hardcoded for now
+# controlCodeStart = 0xC4  # Tetris Attack
 
 class TranslationTable:
     def shiftTable(self, tempOffset):
