@@ -63,4 +63,3 @@ F9 = { name = "speed", length = 1 }
 FB = { name = "color", length = 1 }
 FD = { name = "\n" }
 FE = { name = "playNextStep", length = 0 }
-FF = { name = "END", length = 0 }
