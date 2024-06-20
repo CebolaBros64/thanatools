@@ -1,5 +1,34 @@
 import tomllib
 
+controlCodeStart = 0xF1  # Panepon# Should be a parameter in the .toml file, hardcoded for now
+controlCodeStart = 0xC4
+
+class TranslationTable:
+    def shiftTable(self, tempOffset):
+        self.table = {}
+        for subTable in self.encoding:
+            for i, glyph in enumerate(subTable['glyphs']):
+                if subTable['offset']+i >= controlCodeStart:
+                    break
+                else:
+                    glyph = subTable['glyphs'][i]
+                    self.table[subTable['offset']+i] = glyph
+            # print(subTable)
+        # print(self.table)
+
+    def __init__(self, encoding):
+        self.encoding = encoding
+        self.shiftTable(0)
+
+    def __str__(self):
+        return self.table
+    
+    def __getitem__(self, i):
+        if i in self.table:
+            return self.table[i]
+        else:
+            return f"\\x{i:02x}"
+
 class Section:
     def __init__(self, bytes):
         self.bytes = bytes
@@ -8,15 +37,24 @@ class Section:
         return self.bytes
 
 class Text(Section):
+    def __init__(self, bytes):
+        self.type = 'text'
+        Section.__init__(self, bytes)
+
     # def __str__(self):
         # return self.bytes
         # return ''.join([f"\\x{i:02x}" for i in self.as_bytes()])
 
     def as_text(self, translationTable):
-        return self.__str__()
+        _str = ''
+        for byte in self.bytes:
+            _str += translationTable[byte]
+        return _str
+        # return self.__str__()
 
 class ControlCode(Section):
     def __init__(self, bytes, game_toml):
+        self.type = 'control_code'
         self.codeByte = bytes[0]
         self.codeName = game_toml['encoding']['controls'][f"{self.codeByte:02x}".upper()]['name']
         self.paramsBytes = bytes[1:]
@@ -44,7 +82,7 @@ class Message:
         while i < len(bytes):
             byte = bytes[i]
 
-            if byte >= 0xF1 and f"{byte:02x}".upper() in game_toml['encoding']['controls']:
+            if byte >= controlCodeStart and f"{byte:02x}".upper() in game_toml['encoding']['controls']:
                 ctrlCode = game_toml['encoding']['controls'][f"{byte:02x}".upper()]
 
                 if section != b'':
@@ -56,6 +94,7 @@ class Message:
                     i += ctrlCode['length'] + 1
                 else:
                     section += byte.to_bytes()
+                    # section += ctrlCode['name']
                     i += 1
             else:
                 section += byte.to_bytes()
@@ -72,11 +111,13 @@ class Message:
         return returnVal
     
     def __str__(self):
-        # translationTable = generateTranslationTable(self.encoding, 0)
-        translationTable = {} 
+        translationTable = TranslationTable(self.encoding)
 
         returnVal = ''
         for section in self.sections:
+            if section.type == 'control_code' and section.codeName == 'table':
+                translationTable.shiftTable(section.paramsBytes[0])
+
             returnVal += section.as_text(translationTable)
 
         return returnVal
