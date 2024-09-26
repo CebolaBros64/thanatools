@@ -100,6 +100,8 @@ class Message:
                 section += byte.to_bytes()
                 i += 1
 
+        self.sections.append(Text(section))
+
     def __iter__(self):
         return self
     
